@@ -15,56 +15,81 @@ export default class Stats extends Component {
         }
     }
 
-
     async getCountryStats() {
-        if (this.state.selectedCountry !== '') {
-            const res = await axios.get('/' + this.state.selectedCountry)
-            const data = res.data.data;
-            this.setState({ country: data }, this.getStats);
+        try {
+            if (this.state.selectedCountry !== '') {
+                const res = await axios.get('/' + this.state.selectedCountry)
+                const data = res.data.data;
+                this.setState({ country: data }, this.getStats);
+            } else {
+                console.log('Error on getting country stats');
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
     async getCountries() {
-        const res = await axios.get("/getAllCountries");
-        const data = res.data.data;
-        const country = data.map((d, index) => ({
-            "id": index,
-            "country": d,
-        }));
-        this.setState({ allCountries: country, isLoading: false });
+        try {
+            const res = await axios.get("/getAllCountries");
+            const data = res.data.data;
+            const country = data.map((d, index) => ({
+                "id": index,
+                "country": d,
+            }));
+            this.setState({ allCountries: country, isLoading: false });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     handleChange(e) {
-        this.setState({ selectedCountry: e }, this.getCountryStats);
+        try {
+            this.setState({ selectedCountry: e }, this.getCountryStats);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
 
     componentDidMount() {
-        this.setState({ isLoading: true });
-        this.getCountries();
+        try {
+            this.setState({ isLoading: true });
+            this.getCountries();
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     getAllLabels() {
         let labels = [];
-        for (let i = 0; i < this.state.country.length; i++) {
-            if (!labels.includes(this.state.country[i].year_week)) {
-                labels.push(this.state.country[i].year_week)
+        try {
+            for (let i = 0; i < this.state.country.length; i++) {
+                if (!labels.includes(this.state.country[i].year_week)) {
+                    labels.push(this.state.country[i].year_week)
+                }
             }
+            return labels;
+        } catch (error) {
+            console.error(error);
         }
-        return labels;
     };
 
     getStats() {
         let deaths = [];
         let cases = [];
-        for (let i = 0; i < this.state.country.length; i++) {
-            if (this.state.country[i].indicator === "deaths") {
-                deaths.push(Math.abs(this.state.country[i].weekly_count));
-            } else if (this.state.country[i].indicator === "cases") {
-                cases.push(Math.abs(this.state.country[i].weekly_count));
+        try {
+            for (let i = 0; i < this.state.country.length; i++) {
+                if (this.state.country[i].indicator === "deaths") {
+                    deaths.push(Math.abs(this.state.country[i].weekly_count));
+                } else if (this.state.country[i].indicator === "cases") {
+                    cases.push(Math.abs(this.state.country[i].weekly_count));
+                }
             }
+            this.setState({ deaths: deaths, cases: cases })
+        } catch (error) {
+            console.error(error);
         }
-        this.setState({ deaths: deaths, cases: cases })
     };
 
     renderChart() {

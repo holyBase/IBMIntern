@@ -17,17 +17,25 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello, this is API endpoint');
-})
+    if (data) {
+        res.status(200).json({ data: data });
+    } else {
+        res.status(500).json({ data: 'Something went wrong, data are empty' });
+    }
+});
 
 app.get('/getAllCountries', (req, res) => {
     let allCountry = [];
-    for (let i = 0; i < data.length; i++) {
-        if (!allCountry.includes(data[i].country)) {
-            allCountry.push(data[i].country);
+    try {
+        for (let i = 0; i < data.length; i++) {
+            if (!allCountry.includes(data[i].country)) {
+                allCountry.push(data[i].country);
+            }
         }
+        res.status(200).json({ data: allCountry });
+    } catch (error) {
+        res.status(500).json({ data: 'Something went wrong on getting all countries'});
     }
-    res.status(200).json({ data: allCountry });
 });
 
 
@@ -51,8 +59,8 @@ app.get('/:country', async (req, res) => {
 
 getData = async () => {
     try {
-        console.log('Getting data...');
         const response = await axios.get(api_url);
+        console.log('Getting data...');
         for (let i = 0; i < response.data.length; i++) {
             data.push(response.data[i]);
         }
